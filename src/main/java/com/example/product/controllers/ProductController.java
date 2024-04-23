@@ -4,8 +4,7 @@ import com.example.product.dtos.ProductResponseDto;
 import com.example.product.models.Product;
 import com.example.product.services.IProductService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.stereotype.Repository;
+import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.*;
 
 import javax.websocket.server.PathParam;
@@ -21,6 +20,7 @@ public class ProductController {
     // Get all the products
     @GetMapping("/products")
     public List<Product>  getAllProducts(){
+
         return new ArrayList<>() ;
     }
 
@@ -28,6 +28,13 @@ public class ProductController {
     @GetMapping("/products/{id}")
     public Product getSingleProduct(@PathVariable("id") Long id) {
         return productService.getSingleProduct(id) ;
+    }
+
+    @GetMapping("/products/search")
+    public Page<Product> getProductByName(@RequestParam("name") String name ,
+                                 @RequestParam("pageSize") int pageSize ,
+                                 @RequestParam("startingElementIndex")  int startingElementIndex){
+        return productService.getProductsContainingAName(name,pageSize,startingElementIndex) ;
     }
 
     // add a product

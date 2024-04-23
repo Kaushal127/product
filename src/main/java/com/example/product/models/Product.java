@@ -2,19 +2,20 @@ package com.example.product.models;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.springframework.data.jpa.repository.EntityGraph;
 
 import javax.persistence.Entity;
 import javax.persistence.ManyToOne;
 
 @Getter
 @Setter
+@Entity
+public class Product extends BaseModel{
 
-public class Product  {
-    private Long id ;
-    private String name ;
-    private String description ;
-    private int price ;
-    private String image ;
-    private Category category ;
+    private String description;
+    private String image;
+    private float price;
 
+    @ManyToOne
+    private Category category;
 }
