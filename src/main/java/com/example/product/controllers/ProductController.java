@@ -1,10 +1,12 @@
 package com.example.product.controllers;
 
 import com.example.product.dtos.ProductResponseDto;
+import com.example.product.dtos.RequestDto;
 import com.example.product.models.Product;
 import com.example.product.services.IProductService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.websocket.server.PathParam;
@@ -56,5 +58,9 @@ public class ProductController {
         return true ;
     }
 
+    @PostMapping("/dummyProducts")
+    public ResponseEntity<Object> addProduct(@RequestBody RequestDto request){
+        return productService.addProduct(request);
+    }
 
 }
