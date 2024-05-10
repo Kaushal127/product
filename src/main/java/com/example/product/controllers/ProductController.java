@@ -1,35 +1,51 @@
 package com.example.product.controllers;
 
+import com.example.product.dtos.ProductRequestDto;
 import com.example.product.dtos.ProductResponseDto;
 import com.example.product.dtos.RequestDto;
+import com.example.product.exceptions.InvalidProductException;
+import com.example.product.models.Category;
 import com.example.product.models.Product;
 import com.example.product.services.IProductService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.domain.Page;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.websocket.server.PathParam;
-import java.util.ArrayList;
 import java.util.List;
 
 @RestController
 public class ProductController {
 
-    @Autowired
+
     private IProductService productService ;
+
+    @Autowired
+    public ProductController(@Qualifier("selfProductService") IProductService productService){
+        this.productService=productService;
+    }
 
     // Get all the products
     @GetMapping("/products")
     public List<Product>  getAllProducts(){
 
-        return new ArrayList<>() ;
+        return productService.getAllProducts() ;
     }
 
     // Get product with id
     @GetMapping("/products/{id}")
-    public Product getSingleProduct(@PathVariable("id") Long id) {
-        return productService.getSingleProduct(id) ;
+    public ResponseEntity<Product> getSingleProduct(@PathVariable("id") Long id) {
+        ResponseEntity<Product> response ;
+        try {
+            Product product =  productService.getSingleProduct(id) ;
+            response = new ResponseEntity<>(product, HttpStatus.OK);
+        } catch (InvalidProductException e) {
+            response = new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+        return response;
     }
 
     @GetMapping("/products/search")
@@ -41,15 +57,16 @@ public class ProductController {
 
     // add a product
     @PostMapping("/products")
-    public Product addProduct(@RequestBody ProductResponseDto productResponseDto){
-        return new Product() ;
+    public Product addProduct(@RequestBody ProductRequestDto productRequestDto){
+        return productService.addNewProduct(productRequestDto);
     }
 
     // update a product
     @PutMapping("/products/{id}")
-    public Product updatedProduct(@PathParam("id") Long id ,
-                                  @RequestBody ProductResponseDto productResponseDto){
-        return new Product();
+    public Product updatedProduct(@PathVariable("id") Long id ,
+                                  @RequestBody ProductRequestDto productRequestDto) throws InvalidProductException {
+
+        return productService.updateProduct(id,productRequestDto);
     }
 
     // delete a product
